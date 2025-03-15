@@ -30,4 +30,17 @@ sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/c
 #Note:Incase systemctl if not work use systemd..
 sudo systemctl restart containerd
 sudo systemctl enable containerd
-#Step 5 : Install Kubernetes Components:
+#Step 5 : Install Kubernetes Components:Add the Kubernetes signing key and repository.
+sudo apt-get update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+#Step 6 : Update the package list and install kubelet, kubeadm, and kubectl.
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+#Step 7 : Initialize Kubernetes Master Node: Initialize the Kubernetes cluster using kubeadm.
+sudo kubeadm init
+
